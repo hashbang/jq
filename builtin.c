@@ -269,13 +269,14 @@ static jv f_format(jv input, jv fmt) {
   } else if (!strcmp(fmt_s, "text")) {
     jv_free(fmt);
     return f_tostring(input);
-  } else if (!strcmp(fmt_s, "csv")) {
+  } else if (!strcmp(fmt_s, "csv") || !strcmp(fmt_s, "tsv")) {
     jv_free(fmt);
+    const char* delim = !strcmp(fmt_s, "csv")?",":"\t";
     if (jv_get_kind(input) != JV_KIND_ARRAY)
       return type_error(input, "cannot be csv-formatted, only array");
     jv line = jv_string("");
     jv_array_foreach(input, i, x) {
-      if (i) line = jv_string_append_str(line, ",");
+      if (i) line = jv_string_append_str(line, delim);
       switch (jv_get_kind(x)) {
       case JV_KIND_NULL:
         /* null rendered as empty string */
